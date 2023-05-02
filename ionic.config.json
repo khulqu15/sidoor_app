@@ -1,0 +1,7 @@
+{
+  "name": "orbbit_smart_door",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
