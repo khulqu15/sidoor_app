@@ -186,7 +186,7 @@ export default defineComponent({
       if(this.pin.length >= 5) {
         if(this.pin === "11223") {
           console.log('correct')
-          this.successState("Pin Lock", true)
+          this.successState("Pattern Lock", true)
           pin_input?.classList.add('animate__animated', 'animate__shakeY', 'border', 'border-success')
           pin_content?.classList.add('animate__animated', 'animate__fadeOut')
           setTimeout(() => {
@@ -247,6 +247,7 @@ export default defineComponent({
         }, 1000);
       }
       setTimeout(() => {
+        this.successState("Pattern Lock", false)
         this.pin = ''
         this.pattern.value = [] as number[]
         this.correct = false
@@ -255,13 +256,11 @@ export default defineComponent({
         const pattern_content: HTMLElement | null = document.getElementById('pattern')
         pin_input?.classList.remove('animate__animated', 'animate__shakeY', 'border', 'border-success')
         if(this.mode == 'pin') {
-          this.successState("Pin Lock", false)
           pin_content?.classList.remove('animate__animated', 'animate__fadeOut')
           pin_content?.classList.remove('hidden')
           pin_content?.classList.add('animate__animated', 'animate__fadeInUp')
         }
         if(this.mode == 'pattern') {
-          this.successState("Pattern Lock", false)
           pattern_content?.classList.remove('animate__animated', 'animate__fadeOut')
           pattern_content?.classList.remove('hidden')
           pattern_content?.classList.add('animate__animated', 'animate__fadeInUp')

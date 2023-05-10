@@ -96,8 +96,7 @@
 import { IonContent, IonPage } from '@ionic/vue'
 import { defineComponent } from 'vue'
 import { Icon } from '@iconify/vue'
-import { ref as firebaseRef, set } from "firebase/database"
-import { db } from "@/firebase"
+import { db } from '@/firebase'
 
 export default defineComponent({
   components: {
@@ -134,12 +133,6 @@ export default defineComponent({
     } else document.getElementById('loading')?.classList.add('hidden')
   },
   methods: {
-    successState(method: string, open: boolean) {
-      const openRef = firebaseRef(db, "open")
-      const methodRef = firebaseRef(db, "method")
-      set(openRef, open)
-      set(methodRef, method)
-    },
     clickPattern(row: number) {
       if(!this.pattern.value.find(item => item == row)) {
         this.pattern.value.push(row)
@@ -155,7 +148,6 @@ export default defineComponent({
         for (let i=0; i<this.pattern.value.length; i++) {
           if(this.pattern.value[i] == this.pattern.correct_value[i]) {
             console.log('correct')
-            this.successState("Pattern Lock", true)
             pattern_content?.classList.add('animate__animated', 'animate__fadeOut')
             setTimeout(() => {
               pattern_content?.classList.add('hidden')
@@ -186,7 +178,6 @@ export default defineComponent({
       if(this.pin.length >= 5) {
         if(this.pin === "11223") {
           console.log('correct')
-          this.successState("Pin Lock", true)
           pin_input?.classList.add('animate__animated', 'animate__shakeY', 'border', 'border-success')
           pin_content?.classList.add('animate__animated', 'animate__fadeOut')
           setTimeout(() => {
@@ -255,13 +246,11 @@ export default defineComponent({
         const pattern_content: HTMLElement | null = document.getElementById('pattern')
         pin_input?.classList.remove('animate__animated', 'animate__shakeY', 'border', 'border-success')
         if(this.mode == 'pin') {
-          this.successState("Pin Lock", false)
           pin_content?.classList.remove('animate__animated', 'animate__fadeOut')
           pin_content?.classList.remove('hidden')
           pin_content?.classList.add('animate__animated', 'animate__fadeInUp')
         }
         if(this.mode == 'pattern') {
-          this.successState("Pattern Lock", false)
           pattern_content?.classList.remove('animate__animated', 'animate__fadeOut')
           pattern_content?.classList.remove('hidden')
           pattern_content?.classList.add('animate__animated', 'animate__fadeInUp')
