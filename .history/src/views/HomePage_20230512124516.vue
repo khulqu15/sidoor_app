@@ -10,8 +10,8 @@
             <div id="smart_door" class="text-2xl font-bold hidden">Secure your home door with <br> our advanced technology</div>
             <div id="enjoy_it" class="text-3xl font-bold hidden">Enjoy convenience and security <br> at your fingertips</div>
           </div>
-          <div :key="mode" id="lock-content" class="relative md:w-1/2 sm:w-3/4 z-30 animate__animated animate__fadeInUp">
-            <div id="pin" class="z-20 relative">
+          <div id="lock-content" class="relative md:w-1/2 sm:w-3/4 z-30 animate__animated animate__fadeInUp">
+            <div id="pin" class="absolute bottom-0 opacity-0 z-10">
               <div class="grid grid-cols-1 items-center justify-items-center">
                 <div>
                   <div class="flex items-center justify-center gap-x-3">
@@ -50,7 +50,7 @@
                 </button>
               </div>
             </div>
-            <div id="pattern" class="absolute bottom-0 opacity-0 z-10">
+            <div id="pattern" class="z-20 relative">
               <div class="grid grid-cols-1 items-center justify-items-center">
                 <div>
                   <div class="flex items-center gap-x-3">
@@ -84,7 +84,7 @@
               <div :key="count_success">
                 <Icon icon="solar:shield-check-bold-duotone" class="text-success inline-block text-8xl"/>
                 <h3>Hello, Welome Buddy</h3>
-                <div class="radial-progress bg-black/40 transition-all text-primary-content mt-6" :style="{'--value': (mode === 'pin' ? remainingTime : remainingTime1) * (100 / timer), '--thickness': '2px'}">{{ (mode === 'pin' ? remainingTime : remainingTime1) }} s</div>
+                <div class="radial-progress bg-black/40 transition-all text-primary-content mt-6" :style="{'--value': (mode === 'pin' ? remainingTime : remainingTime1) * 10, '--thickness': '2px'}">{{ (mode === 'pin' ? remainingTime : remainingTime1) }} s</div>
                 <div class="mt-3">
                   <button @click="$router.push({name: 'Setting'})" class="btn btn-ghost text-white">Setting Parameter</button>
                 </div>
@@ -124,10 +124,9 @@ export default defineComponent({
         timeoutId: null as ReturnType<typeof setTimeout> | null
       },
       pin_correct_value: 12345,
-      mode: 'pin',
+      mode: 'pattern',
       correct: false,
       remainingTime: 10,
-      timer: 10,
       timerId: undefined as number | undefined,
       remainingTime1: 10,
       timerId1: undefined as number | undefined,
@@ -150,7 +149,6 @@ export default defineComponent({
           const data = snapshot.val()
           this.remainingTime = parseInt(data) / 1000
           this.remainingTime1 = parseInt(data) / 1000
-          this.timer = parseInt(data) / 1000
       })
 
       const pinValue = firebaseRef(db, 'app/pin')
@@ -165,7 +163,6 @@ export default defineComponent({
           const array = data.split(',')
           const numberArray = array.map(Number)
           this.pattern.correct_value = numberArray
-          console.log(this.pattern.correct_value)
       })
     },
     checkRealTimeData() {

@@ -10,8 +10,8 @@
             <div id="smart_door" class="text-2xl font-bold hidden">Secure your home door with <br> our advanced technology</div>
             <div id="enjoy_it" class="text-3xl font-bold hidden">Enjoy convenience and security <br> at your fingertips</div>
           </div>
-          <div :key="mode" id="lock-content" class="relative md:w-1/2 sm:w-3/4 z-30 animate__animated animate__fadeInUp">
-            <div id="pin" class="z-20 relative">
+          <div id="lock-content" class="relative md:w-1/2 sm:w-3/4 z-30 animate__animated animate__fadeInUp">
+            <div id="pin" class="absolute bottom-0 opacity-0 z-10">
               <div class="grid grid-cols-1 items-center justify-items-center">
                 <div>
                   <div class="flex items-center justify-center gap-x-3">
@@ -50,7 +50,7 @@
                 </button>
               </div>
             </div>
-            <div id="pattern" class="absolute bottom-0 opacity-0 z-10">
+            <div id="pattern" class="z-20 relative">
               <div class="grid grid-cols-1 items-center justify-items-center">
                 <div>
                   <div class="flex items-center gap-x-3">
@@ -81,14 +81,9 @@
               </div>
             </div>
             <div v-if="correct" id="success" class="animate__animated animate__fadeIn relative z-30 text-white text-center">
-              <div :key="count_success">
-                <Icon icon="solar:shield-check-bold-duotone" class="text-success inline-block text-8xl"/>
-                <h3>Hello, Welome Buddy</h3>
-                <div class="radial-progress bg-black/40 transition-all text-primary-content mt-6" :style="{'--value': (mode === 'pin' ? remainingTime : remainingTime1) * (100 / timer), '--thickness': '2px'}">{{ (mode === 'pin' ? remainingTime : remainingTime1) }} s</div>
-                <div class="mt-3">
-                  <button @click="$router.push({name: 'Setting'})" class="btn btn-ghost text-white">Setting Parameter</button>
-                </div>
-              </div>
+              <Icon icon="solar:shield-check-bold-duotone" class="text-success inline-block text-8xl"/>
+              <h3>Hello, Welome Buddy</h3>
+              <div class="radial-progress bg-black/40 transition-all text-primary-content mt-6" :style="{'--value': (mode === 'pin' ? remainingTime : remainingTime1) * 10, '--thickness': '2px'}">{{ (mode === 'pin' ? remainingTime : remainingTime1) }} s</div>
             </div>
           </div>
         </div>
@@ -115,7 +110,6 @@ export default defineComponent({
       node: {
         num: 0,
       },
-      count_success: 0,
       loaded: false,
       pin: '',
       pattern: {
@@ -123,18 +117,15 @@ export default defineComponent({
         value: [] as number[],
         timeoutId: null as ReturnType<typeof setTimeout> | null
       },
-      pin_correct_value: 12345,
-      mode: 'pin',
+      mode: 'pattern',
       correct: false,
       remainingTime: 10,
-      timer: 10,
       timerId: undefined as number | undefined,
       remainingTime1: 10,
       timerId1: undefined as number | undefined,
     }
   },
   mounted() {
-    this.valueRefRTDB()
     this.checkRealTimeData()
     const has_load = localStorage.getItem('has_load')
     if(!has_load) {
@@ -144,30 +135,6 @@ export default defineComponent({
     } else document.getElementById('loading')?.classList.add('hidden')
   },
   methods: {
-    valueRefRTDB() {
-      const timerValue = firebaseRef(db, 'timer')
-      onValue(timerValue, (snapshot) => {
-          const data = snapshot.val()
-          this.remainingTime = parseInt(data) / 1000
-          this.remainingTime1 = parseInt(data) / 1000
-          this.timer = parseInt(data) / 1000
-      })
-
-      const pinValue = firebaseRef(db, 'app/pin')
-      onValue(pinValue, (snapshot) => {
-          const data = snapshot.val()
-          this.pin_correct_value = parseInt(data)
-      })
-
-      const patternValue = firebaseRef(db, 'app/pattern')
-      onValue(patternValue, (snapshot) => {
-          const data = snapshot.val()
-          const array = data.split(',')
-          const numberArray = array.map(Number)
-          this.pattern.correct_value = numberArray
-          console.log(this.pattern.correct_value)
-      })
-    },
     checkRealTimeData() {
       const pattern_content: HTMLElement | null = document.getElementById('pattern')
       const pin_input: HTMLElement | null = document.getElementById('pin_input')
@@ -197,7 +164,6 @@ export default defineComponent({
       })
     },
     successState(method: string, open: boolean) {
-      this.count_success += 1
       const openRef = firebaseRef(db, "open")
       const methodRef = firebaseRef(db, "method")
       set(openRef, open)
@@ -246,8 +212,8 @@ export default defineComponent({
       const pin_content: HTMLElement | null = document.getElementById('pin')
       pin_input?.classList.remove('animate__animated', 'animate__shakeX', 'animate__shakeY', 'border', 'border-red-500', 'border-success')
       if(!this.correct) this.pin += value.toString()
-      // if(this.pin.length >= 5) {
-        if(this.pin === this.pin_correct_value.toString()) {
+      if(this.pin.length >= 5) {
+        if(this.pin === "11223") {
           console.log('correct')
           this.successState("Pin Lock", true)
           pin_input?.classList.add('animate__animated', 'animate__shakeY', 'border', 'border-success')
@@ -257,12 +223,11 @@ export default defineComponent({
             this.correct = true
             this.startTimer()
           }, 1000)
-        // }
-        // else {
-        //   console.log('incorrect')
-        //   pin_input?.classList.add('animate__animated', 'animate__shakeX', 'border', 'border-red-500')
-        //   this.pin = '' 
-        // }
+        } else {
+          console.log('incorrect')
+          pin_input?.classList.add('animate__animated', 'animate__shakeX', 'border', 'border-red-500')
+          this.pin = '' 
+        }
       }
     },
     changeMode(value: string) {
@@ -330,7 +295,7 @@ export default defineComponent({
           pattern_content?.classList.remove('hidden')
           pattern_content?.classList.add('animate__animated', 'animate__fadeInUp')
         }
-      }, (this.remainingTime * 1000))
+      }, 10000)
     },
     runLoading() {
       const text_hello: HTMLElement | null = document.getElementById('hello')

@@ -11,7 +11,7 @@
             <div id="enjoy_it" class="text-3xl font-bold hidden">Enjoy convenience and security <br> at your fingertips</div>
           </div>
           <div :key="mode" id="lock-content" class="relative md:w-1/2 sm:w-3/4 z-30 animate__animated animate__fadeInUp">
-            <div id="pin" class="z-20 relative">
+            <div id="pin" class="absolute bottom-0 opacity-0 z-10">
               <div class="grid grid-cols-1 items-center justify-items-center">
                 <div>
                   <div class="flex items-center justify-center gap-x-3">
@@ -50,7 +50,7 @@
                 </button>
               </div>
             </div>
-            <div id="pattern" class="absolute bottom-0 opacity-0 z-10">
+            <div id="pattern" class="z-20 relative">
               <div class="grid grid-cols-1 items-center justify-items-center">
                 <div>
                   <div class="flex items-center gap-x-3">
@@ -124,7 +124,7 @@ export default defineComponent({
         timeoutId: null as ReturnType<typeof setTimeout> | null
       },
       pin_correct_value: 12345,
-      mode: 'pin',
+      mode: 'pattern',
       correct: false,
       remainingTime: 10,
       timer: 10,
