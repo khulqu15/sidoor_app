@@ -82,9 +82,9 @@ export default {
         const timer = ref(0)
         const remainingTime = ref(10)
         const loadModels = async () => {
-            await faceapi.nets.ssdMobilenetv1.loadFromUri('/')
-            await faceapi.nets.faceLandmark68Net.loadFromUri('/')
-            await faceapi.nets.faceRecognitionNet.loadFromUri('/')
+            await faceapi.nets.ssdMobilenetv1.load('/')
+            await faceapi.nets.faceLandmark68Net.load('/')
+            await faceapi.nets.faceRecognitionNet.load('/')
         }
         const timerId = ref<number | undefined>(undefined);
         const faceLock: HTMLElement | null = document.getElementById("faceLock")
